@@ -37,7 +37,7 @@ public class CurrencyServiceImpl implements CurrencyService {
         checkUpdateCurrencyFields(currencyModel);
         Currency currency = currencyRepository
                 .findById(id)
-                .orElseThrow(() -> new NotFoundException("Currency by id: " + id + " not found"));
+                .orElseThrow(() -> new NotFoundException("Идентификатор валюты: " + id + "не найден"));
         setUpdateFields(currency, currencyModel);
         currencyRepository.save(currency);
         return currencyModel;
@@ -48,7 +48,7 @@ public class CurrencyServiceImpl implements CurrencyService {
         checkIdForNull(id);
         Currency currency = currencyRepository
                 .findById(id)
-                .orElseThrow(() -> new NotFoundException("Currency by id: " + id + " not found"));
+                .orElseThrow(() -> new NotFoundException("Идентификатор валюты: " + id + "не найден"));
         return currency.toModel();
     }
 
@@ -62,7 +62,7 @@ public class CurrencyServiceImpl implements CurrencyService {
 
     private void checkIdForNull(Long id) {
         if (id == null) {
-            throw new BadRequestException("id not be null");
+            throw new BadRequestException("Идентификатор не может быть пустым! ");
         }
     }
 
@@ -71,10 +71,10 @@ public class CurrencyServiceImpl implements CurrencyService {
         Double currencyRate = currencyModel.getRate();
 
         if (currencyName == null || currencyName.isEmpty())
-            throw new BadRequestException("currency name nu be null");
+            throw new BadRequestException("Валюта не может быть пустым! ");
 
         if (currencyRate == null)
-            throw new BadRequestException("rate not be null");
+            throw new BadRequestException("Курс валюты не может быть пустым! ");
     }
 
     private void checkUpdateCurrencyFields(CurrencyModel currencyModel) {
@@ -83,7 +83,7 @@ public class CurrencyServiceImpl implements CurrencyService {
 
         if (currencyName != null)
             if (currencyName.isEmpty())
-                throw new BadRequestException("currency name nu be null");
+                throw new BadRequestException("Валюта не может быть пустым! ");
 
         if (currencyRate != null)
             checkRate(currencyRate);
@@ -91,7 +91,7 @@ public class CurrencyServiceImpl implements CurrencyService {
 
     private void checkRate(Double rate) {
         if (rate < 0)
-            throw new BadRequestException("rate no be < 0");
+            throw new BadRequestException("Курс валюты не может быть отрицательным! ");
     }
 
     private void setUpdateFields(Currency currency, CurrencyModel currencyModel) {
