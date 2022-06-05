@@ -54,10 +54,10 @@ public class CurrencyServiceImpl implements CurrencyService {
 
     @Override
     public List<CurrencyModel> getAllCurrency() {
-    return currencyRepository.findAll()
-            .stream()
-            .map(Currency::toModel)
-            .collect(Collectors.toList());
+        return currencyRepository.findAll()
+                .stream()
+                .map(Currency::toModel)
+                .collect(Collectors.toList());
     }
 
     private void checkIdForNull(Long id) {
@@ -70,11 +70,11 @@ public class CurrencyServiceImpl implements CurrencyService {
         String currencyName = currencyModel.getName();
         Double currencyRate = currencyModel.getRate();
 
-         if (currencyName == null || currencyName.isEmpty())
-             throw new BadRequestException("currency name nu be null");
+        if (currencyName == null || currencyName.isEmpty())
+            throw new BadRequestException("currency name nu be null");
 
-         if (currencyRate == null)
-             throw new BadRequestException("rate not be null");
+        if (currencyRate == null)
+            throw new BadRequestException("rate not be null");
     }
 
     private void checkUpdateCurrencyFields(CurrencyModel currencyModel) {

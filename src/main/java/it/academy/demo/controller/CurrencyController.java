@@ -2,13 +2,17 @@ package it.academy.demo.controller;
 
 import it.academy.demo.exception.BadRequestException;
 import it.academy.demo.exception.NotFoundException;
+import it.academy.demo.model.AuthenticationRequest;
+import it.academy.demo.model.AuthenticationResponse;
 import it.academy.demo.model.CreateCurrencyModel;
 import it.academy.demo.model.CurrencyModel;
+import it.academy.demo.security.jwt.JwtUtil;
 import it.academy.demo.srvice.CurrencyService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,7 +21,33 @@ import java.util.List;
 @RequestMapping("/api/currency")
 public class CurrencyController {
     @Autowired
-    CurrencyService currencyService;
+    private CurrencyService currencyService;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @PostMapping("/login")
+    public ResponseEntity login(@RequestBody AuthenticationRequest authenticationRequest) {
+        String username = authenticationRequest.getUsername();
+        String password = authenticationRequest.getPassword();
+
+        if (username == null || username.isEmpty())
+            return getErrorAuthorizationMessage("Заполните поле логин");
+
+        if (password == null || password.isEmpty())
+           return getErrorAuthorizationMessage("Заполните поле пароль");
+
+        if (!username.equals("admin") || !password.equals("admin"))
+             getErrorAuthorizationMessage("Неверный логин или пароль");
+
+        final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        final String jwt = jwtUtil.generateToken(userDetails);
+
+        return ResponseEntity.ok(new AuthenticationResponse(jwt));
+    }
 
     @PostMapping("/create")
     public ResponseEntity create(@RequestBody CreateCurrencyModel createCurrencyModel) {
@@ -59,5 +89,9 @@ public class CurrencyController {
     @GetMapping("/get-all")
     public List<CurrencyModel> getAll() {
         return currencyService.getAllCurrency();
+    }
+
+    private ResponseEntity getErrorAuthorizationMessage(String message) {
+        return new ResponseEntity(message, HttpStatus.BAD_REQUEST);
     }
 }
